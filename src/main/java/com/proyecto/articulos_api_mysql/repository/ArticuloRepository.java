@@ -9,8 +9,22 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
+public interface ArticuloRepository extends JpaRepository<Articulo, Long> { 
     
+    List<Articulo> findAllByOrderByNombreAsc();
+    
+    @Query("""
+        SELECT a FROM Articulo a
+        WHERE LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(a.nombre, 'á', 'a'), 'é', 'e'), 'í', 'i'), 'ó', 'o'), 'ú', 'u'))
+        LIKE LOWER(CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(:texto, 'á', 'a'), 'é', 'e'), 'í', 'i'), 'ó', 'o'), 'ú', 'u'), '%'))
+        ORDER BY a.nombre ASC
+    """)
+    List<Articulo> buscarSinTildes(@Param ("texto") String texto);
+    
+}
+
+/*
+// Buscar artículos por nombre
     List<Articulo> findByNombre(String nombre);
 
     // Buscar artículos cuyo nombre contenga una palabra (LIKE '%texto%')
@@ -33,13 +47,4 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
 
     // Buscar artículos por nombre y precio mayor a cierto valor
     List<Articulo> findByNombreContainingAndPrecioGreaterThan(String nombre, Double precio);
-
-    @Query("""
-        SELECT a FROM Articulo a
-        WHERE LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(a.nombre, 'á', 'a'), 'é', 'e'), 'í', 'i'), 'ó', 'o'), 'ú', 'u'))
-        LIKE LOWER(CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(:texto, 'á', 'a'), 'é', 'e'), 'í', 'i'), 'ó', 'o'), 'ú', 'u'), '%'))
-        ORDER BY a.nombre ASC
-    """)
-    List<Articulo> buscarSinTildes(@Param ("texto") String texto);
-    
-}
+*/

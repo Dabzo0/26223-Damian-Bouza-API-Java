@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -48,6 +49,18 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 "Validation Error",
                 detalles,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    // 400 - JSON mal formado o tipo de dato incompatible (ej. "precio": "asd")
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleNotReadable(HttpMessageNotReadableException ex) {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                "El cuerpo de la solicitud tiene un formato JSON inválido o tipos de datos incorrectos",
                 LocalDateTime.now()
         );
         return ResponseEntity.badRequest().body(body);

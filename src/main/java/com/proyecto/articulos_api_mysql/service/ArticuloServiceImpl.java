@@ -18,8 +18,9 @@ public class ArticuloServiceImpl implements ArticuloService {
         if (nombre == null) {
             return null;
         }
+        
         return nombre.trim().toUpperCase();
-    }
+    } 
 
     @Autowired
     public ArticuloServiceImpl(ArticuloRepository articuloRepository) {
@@ -51,7 +52,18 @@ public class ArticuloServiceImpl implements ArticuloService {
         }
                 
         if (articulo.getPrecio() != null){
+            if (articulo.getPrecio() < 0) {
+                throw new IllegalArgumentException("El precio debe ser mayor o igual a cero.");
+            }
             existente.setPrecio(articulo.getPrecio());
+        }
+
+        if (articulo.getDescripcion() != null){
+            existente.setDescripcion(articulo.getDescripcion().isBlank() ? null : articulo.getDescripcion().trim());
+        }
+
+        if (articulo.getImagen() != null){
+            existente.setImagen(articulo.getImagen().isBlank() ? null : articulo.getImagen().trim());
         }
         
         return articuloRepository.save(existente);
